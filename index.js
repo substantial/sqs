@@ -115,11 +115,19 @@ module.exports = function(options) {
 
   var that = new process.EventEmitter();
 
-  that.push = function(name, message, callback) {
+  that.push = function(name, message, callback, delaySeconds) {
     name = namespace+name;
 
+    var params = {
+      MessageBody: JSON.stringify(message)
+    };
+
+    if (delaySeconds) {
+      params.DelaySeconds = delaySeconds;
+    }
+
     queueURL(name, function(url) {
-      retry(request, queryURL('SendMessage', url, {MessageBody:JSON.stringify(message)}), callback);
+      retry(request, queryURL('SendMessage', url, params), callback);
     });
   };
 
